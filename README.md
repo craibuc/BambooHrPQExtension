@@ -1,6 +1,28 @@
 # BambooHrPQExtension
 Power Query connector for BambooHR.
 
+## Installation
+
+- Copy the extension file (`BambooHrPQExtension.mez`) into [Documents]/Power BI Desktop/Custom Connectors.
+- Check the option **(Not Recommended) Allow any extension to load without validation or warning** in Power BI Desktop (under File | Options and settings | Options | Security | Data Extensions).
+- Restart Power BI Desktop.
+
+## Usage
+
+- Open Power BI
+- Select File | Get Data
+- Select `Other`, `BambooHrPQExtension`, then `Connect`
+
+![Get Data](./images/Get%20Data.png)
+
+- When the dialog appears, supply the `subdomain`:
+
+![Uncertified Connectors](./images/BambooHrPQExtension.Contents.png)
+
+- Select the desired tables from the Navigator dialog
+
+![Navigator](./images/Navigator.png)
+
 ## Contributors
 
 - [Craig Buchanan](https://github.com/craibuc/)
