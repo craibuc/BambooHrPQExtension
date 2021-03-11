@@ -22,11 +22,43 @@ shared NavigationTable = (subdomain as text) =>
         objects = #table(
             {"Name","Key","Data","ItemKind", "ItemName","IsLeaf"},
             {
-                {"EmployeeDirectory","employeeDirectory",EmployeeDirectory(subdomain), "Table", "Table", true},
-                {"Users","users",Users(subdomain), "Table", "Table", true},
-                {"Metadata", "metadata",  MetadataTable(subdomain), "Folder", "Folder", false}
+                {"EmployeeDirectory","employeeDirectory", EmployeeDirectory(subdomain), "Table", "Table", true},
+                {"Users", "users", Users(subdomain), "Table", "Table", true},
+                {"Tables", "tables",  TableNodes(subdomain), "Folder", "Folder", false},
+                {"Metadata", "metadata",  MetadataNodes(subdomain), "Folder", "Folder", false}
             }),
         NavTable = Table.ToNavigationTable(objects, {"Key"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf")
+    in
+        NavTable
+;
+
+/*
+Purpose:
+    Return a dynamic list of table nodes
+Parameters:
+    subdomain - the name of the customer's subdomain (e.g. https://[subdomain].bamboohr.com/)
+
+*/
+TableNodes = (subdomain as text) as table => 
+    let
+        Source = GetResource( subdomain, "/meta/tables" ),
+        #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+        #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"alias", "fields"}, {"alias", "fields"}),
+        #"Removed Other Columns" = Table.SelectColumns(#"Expanded Column1",{"alias"}),
+        #"Renamed Columns" = Table.RenameColumns(#"Removed Other Columns",{{"alias", "Name"}}),
+
+        // Add Data as a calculated column
+        //each TableData([Name])
+        withData = Table.AddColumn(#"Renamed Columns", "Data", each "TODO", type table),
+
+        // Add ItemKind and ItemName as fixed text values
+        withItemKind = Table.AddColumn(withData, "ItemKind", each [Name], type text),
+        withItemName = Table.AddColumn(withItemKind, "ItemName", each [Name], type text),
+
+        // Indicate that the node should not be expandable
+        withIsLeaf = Table.AddColumn(withItemName, "IsLeaf", each true, type logical),
+
+        NavTable = Table.ToNavigationTable(withIsLeaf, {"Name"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf")
     in
         NavTable
 ;
@@ -37,12 +69,12 @@ Purpose:
 Parameters:
     subdomain - the name of the customer's subdomain (e.g. https://[subdomain].bamboohr.com/)
 */
-MetadataTable = (subdomain as text) as table => 
+MetadataNodes = (subdomain as text) as table => 
     let
         objects = #table(
             {"Name","Key","Data","ItemKind", "ItemName","IsLeaf"},
             {
-                {"Tables", "tables", Tables(subdomain), "Table", "Table", true},
+//                {"Tables", "tables", Tables(subdomain), "Table", "Table", true},
                 {"Fields", "fields", Fields(subdomain), "Table", "Table", true}
         }),
         NavTable = Table.ToNavigationTable(objects, {"Key"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf")
@@ -101,6 +133,7 @@ Parameters:
 Links:
     https://documentation.bamboohr.com/reference#metadata-get-a-list-of-tabular-fields-1
 */
+/*
 Tables = (subdomain as text) =>
     let
         Source = GetResource( subdomain, "/meta/tables" ),
@@ -112,6 +145,7 @@ Tables = (subdomain as text) =>
     in
         #"Renamed Columns"
 ;
+*/
 
 /*
 Purpose:
