@@ -9,4 +9,5 @@ Power Query connector for BambooHR.
 
 - [BambooHR API reference](https://documentation.bamboohr.com/reference)
 - [Power Query documentation](https://docs.microsoft.com/en-us/power-query/)
+- [Power Query samples](https://docs.microsoft.com/en-us/power-query/samplesdirectory)
 - [Chris Webb's BI Blog - Custom Data Connectors](https://blog.crossjoin.co.uk/category/custom-data-connectors/)
